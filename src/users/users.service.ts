@@ -26,19 +26,24 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.repo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    return await this.repo.findOne({ where: { id } });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const { email, password } = updateUserDto;
+    const savedUser = await this.repo.findOne({ where: { id } });
+    savedUser.email = email;
+    savedUser.password = await bcrypt.hash(password, 10);
+    return this.repo.save(savedUser);
+
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    return this.repo.delete(id)
   }
 }
