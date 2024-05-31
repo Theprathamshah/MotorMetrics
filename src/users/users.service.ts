@@ -37,6 +37,9 @@ export class UsersService {
   async update(id: number, updateUserDto: UpdateUserDto) {
     const { email, password } = updateUserDto;
     const savedUser = await this.repo.findOne({ where: { id } });
+    if (!savedUser) {
+      throw new BadRequestException(`User with id ${id} not found!`);
+    }
     savedUser.email = email;
     savedUser.password = await bcrypt.hash(password, 10);
     return this.repo.save(savedUser);
